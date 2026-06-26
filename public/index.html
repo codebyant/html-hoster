@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>html-hoster — Publique páginas HTML via API</title>
+  <meta name="description" content="Serviço open source para hospedar páginas HTML estáticas via API REST ou MCP. Envie HTML, receba uma URL pública." />
+  <meta property="og:title" content="html-hoster" />
+  <meta property="og:description" content="Publique páginas HTML estáticas via API ou IA. Sem CMS. Sem painel." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/x-icon" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #0a0a0a;
+      --bg-2:    #111111;
+      --bg-card: rgba(255,255,255,0.03);
+      --fg:      #fafafa;
+      --fg-sub:  #a1a1aa;
+      --fg-muted:#71717a;
+      --primary: oklch(0.57 0.1998 285.02);
+      --border:  rgba(255,255,255,0.08);
+      --border-h:rgba(255,255,255,0.15);
+      --radius:  12px;
+      --font:    'Inter', sans-serif;
+      --mono:    'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font);
+      line-height: 1.6;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.75);
+    }
+    .nav-left, .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; padding: 0 24px; max-width: 1100px; margin: 0 auto;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--fg);
+      font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px; background: var(--primary);
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-family: var(--mono); color: #fff; font-weight: 500;
+    }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      text-decoration: none; color: var(--fg-sub); font-size: 13.5px;
+      padding: 6px 11px; border-radius: 8px; transition: color .15s, background .15s;
+    }
+    .nav-link:hover { color: var(--fg); background: rgba(255,255,255,0.06); }
+
+    /* language switcher */
+    .lang-switcher {
+      position: relative; display: flex; align-items: center; gap: 4px; margin-left: 4px;
+    }
+    .lang-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 8px; border: 1px solid var(--border);
+      background: transparent; color: var(--fg-sub); font-size: 12.5px;
+      font-family: var(--font); cursor: pointer; transition: all .15s;
+    }
+    .lang-btn:hover { color: var(--fg); border-color: var(--border-h); background: rgba(255,255,255,0.05); }
+    .lang-dropdown {
+      display: none; position: absolute; top: calc(100% + 8px); right: 0;
+      background: #161616; border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; min-width: 160px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .lang-dropdown.open { display: block; }
+    .lang-option {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      font-size: 13px; color: var(--fg-sub); cursor: pointer; transition: background .12s, color .12s;
+    }
+    .lang-option:hover { background: rgba(255,255,255,0.06); color: var(--fg); }
+    .lang-option.active { color: var(--primary); }
+    .lang-divider { height: 1px; background: var(--border); margin: 4px 0; }
+    .lang-contribute {
+      display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+      font-size: 12px; color: var(--fg-muted); text-decoration: none; transition: color .12s;
+    }
+    .lang-contribute:hover { color: var(--fg-sub); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px; border-radius: 9px;
+      font-size: 13.5px; font-weight: 500; font-family: var(--font);
+      text-decoration: none; cursor: pointer; border: none; transition: all .2s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--fg-sub); border: 1px solid var(--border-h); }
+    .btn-outline:hover { color: var(--fg); border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .btn-sm { padding: 6px 14px; font-size: 13px; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 80vh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+      padding: 120px 24px 80px; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse at center, oklch(0.57 0.1998 285.02 / 0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 5px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      font-size: 12px; color: var(--fg-sub); margin-bottom: 28px; letter-spacing: 0.03em;
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); }
+    .hero h1 {
+      font-size: clamp(34px, 5.5vw, 54px); font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary) 0%, oklch(0.72 0.16 300) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-tagline {
+      font-size: clamp(16px, 2.2vw, 19px); color: var(--fg-sub);
+      max-width: 600px; margin-bottom: 12px; font-weight: 500;
+      line-height: 1.5;
+    }
+    .hero-sub {
+      font-size: clamp(13.5px, 1.8vw, 15px); color: var(--fg-muted);
+      max-width: 520px; margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    /* hook */
+    .hero-hook {
+      max-width: 520px; text-align: center;
+      margin: 0 auto 24px;
+    }
+    .hero-hook p {
+      font-size: 13.5px; color: var(--fg-muted); line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap; justify-content: center; margin-bottom: 32px;
+    }
+    .hero-curl {
+      background: rgba(255, 255, 255, 0.015); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 20px;
+      max-width: 520px; width: 100%; text-align: left;
+      margin-top: 12px;
+    }
+    .hero-curl-label {
+      font-size: 10px; color: var(--fg-muted); font-family: var(--mono);
+      margin-bottom: 8px; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .hero-curl pre {
+      font-family: var(--mono); font-size: 12.5px; line-height: 1.6;
+      color: #e4e4e7; overflow-x: auto; white-space: pre;
+      margin: 0;
+    }
+    .t-dim { color: #52525b; }
+    .t-green { color: #86efac; }
+    .t-yellow { color: #fde68a; }
+    .t-blue { color: #93c5fd; }
+    .t-purple { color: oklch(0.75 0.15 285); }
+
+    /* ── SECTIONS ── */
+    section { padding: 96px 0; }
+    .section-label {
+      font-size: 11.5px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--primary); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px); font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, #71717a 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 16px;
+    }
+    .section-sub { color: var(--fg-muted); font-size: 16px; max-width: 520px; line-height: 1.7; }
+
+    /* ── HOW IT WORKS ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 56px;
+      align-items: center;
+      text-align: left;
+    }
+    .how-col-left {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .how-col-right {
+      display: flex;
+      flex-direction: column;
+    }
+    .how-preview-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(15, 15, 15, 0.45);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 420px;
+    }
+    .how-preview-header {
+      height: 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 10, 10, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .how-preview-dots {
+      display: flex;
+      gap: 7px;
+    }
+    .how-preview-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+    .how-preview-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .how-preview-tab {
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--fg-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .how-preview-tab:hover {
+      color: var(--fg-sub);
+    }
+    .how-preview-tab.active {
+      color: var(--fg);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .how-preview-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .how-preview-pane {
+      display: none;
+      height: 100%;
+      width: 100%;
+    }
+    .how-preview-pane.active {
+      display: block;
+    }
+    .how-preview-pane pre {
+      margin: 0;
+      padding: 24px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #e4e4e7;
+      overflow-x: auto;
+      text-align: left;
+    }
+    .chat-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #4ade80;
+      font-family: var(--mono);
+    }
+    .chat-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      animation: chat-pulse 2s infinite;
+    }
+    @keyframes chat-pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+    .chat-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .chat-bubble {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      animation: chat-fade-up 0.25s ease forwards;
+    }
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--fg);
+      border-bottom-right-radius: 2px;
+    }
+    .chat-bubble.assistant {
+      align-self: flex-start;
+      background: oklch(0.57 0.1998 285.02 / 0.08);
+      border: 1px solid oklch(0.57 0.1998 285.02 / 0.18);
+      color: var(--fg);
+      border-bottom-left-radius: 2px;
+    }
+    .chat-bubble.assistant a {
+      color: #a78bfa;
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    .chat-tool-call {
+      align-self: flex-start;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 2px solid var(--primary);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--fg-sub);
+      animation: chat-fade-up 0.25s ease forwards;
+    }
+    .chat-tool-call code {
+      color: #86efac;
+    }
+    .chat-typing {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      align-self: flex-start;
+    }
+    .chat-typing-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--fg-muted);
+      animation: chat-typing-bounce 1.4s infinite ease-in-out;
+    }
+    .chat-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .chat-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes chat-typing-bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-4px); }
+    }
+    @keyframes chat-fade-up {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Step Cards and responsive queries */
+    .how-step-card {
+      display: flex;
+      gap: 20px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .how-step-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-h);
+      transform: translateX(4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+    .how-step-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .how-step-info {
+      text-align: left;
+    }
+    .how-step-info h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--fg);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+    .how-step-info p {
+      font-size: 13.5px;
+      color: var(--fg-sub);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .how-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .how-preview-card {
+        height: 380px;
+      }
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px; margin-top: 56px;
+    }
+    .feature-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-h); background: rgba(255,255,255,0.05);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; font-size: 18px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    }
+    .feature-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .feature-card p { font-size: 14px; color: var(--fg-muted); line-height: 1.65; }
+    .feature-card code { font-family: var(--mono); font-size: 12px; color: var(--primary); }
+
+    /* ── CODE ── */
+    .code-block {
+      background: #0d0d0d; border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-top: 40px;
+    }
+    .code-tabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 16px; }
+    .code-tab {
+      padding: 12px 16px; font-size: 12.5px; font-family: var(--mono);
+      color: var(--fg-muted); cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all .15s; margin-bottom: -1px;
+    }
+    .code-tab.active { color: var(--fg); border-bottom-color: var(--primary); }
+    .code-body { padding: 28px; display: none; }
+    .code-body.active { display: block; }
+    .code-body pre {
+      font-family: var(--mono); font-size: 13px; line-height: 1.8;
+      color: #e4e4e7; overflow-x: auto;
+    }
+
+    /* ── ENDPOINTS ── */
+    .endpoints { margin-top: 56px; display: flex; flex-direction: column; gap: 10px; }
+    .endpoint {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px; border: 1px solid var(--border);
+      border-radius: 10px; background: var(--bg-card); transition: border-color .2s;
+    }
+    .endpoint:hover { border-color: var(--border-h); }
+    .method {
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px; min-width: 52px;
+      text-align: center; letter-spacing: 0.05em;
+    }
+    .method-put    { background: rgba(251,191,36,0.12);  color: #fbbf24; }
+    .method-post   { background: rgba(74,222,128,0.12);  color: #4ade80; }
+    .method-get    { background: rgba(96,165,250,0.12);  color: #60a5fa; }
+    .method-delete { background: rgba(248,113,113,0.12); color: #f87171; }
+    .endpoint-path { font-family: var(--mono); font-size: 13.5px; flex: 1; }
+    .endpoint-desc { font-size: 13px; color: var(--fg-muted); }
+    .endpoint-badge {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--fg-muted); white-space: nowrap;
+    }
+    .endpoint-badge.pub { border-color: rgba(74,222,128,0.3); color: #4ade80; }
+
+    /* ── MCP BOX ── */
+    .mcp-box {
+      margin-top: 56px; border: 1px solid oklch(0.57 0.1998 285.02 / 0.3);
+      border-radius: 16px; background: oklch(0.57 0.1998 285.02 / 0.05);
+      padding: 40px; display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center;
+    }
+    .mcp-box h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+    .mcp-box p { color: var(--fg-muted); font-size: 15px; line-height: 1.7; margin-bottom: 20px; }
+    .mcp-tools { display: flex; flex-direction: column; gap: 8px; }
+    .mcp-tool {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 9px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+    }
+    .mcp-tool-name { font-family: var(--mono); font-size: 13px; color: var(--primary); flex-shrink: 0; }
+    .mcp-tool-desc { font-size: 13px; color: var(--fg-muted); }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center; padding: 100px 24px; position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 400px;
+      background: radial-gradient(ellipse at center, oklch(0.57 0.1998 285.02 / 0.1) 0%, transparent 70%);
+    }
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff 0%, #71717a 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 16px; position: relative;
+    }
+    .cta-section p { color: var(--fg-muted); font-size: 16px; margin-bottom: 36px; max-width: 460px; margin-left: auto; margin-right: auto; position: relative; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; }
+    .footer-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; max-width: 1100px; margin: 0 auto;
+    }
+    .footer-left { font-size: 13px; color: var(--fg-muted); }
+    .footer-left a { color: var(--fg-sub); text-decoration: none; transition: color .15s; }
+    .footer-left a:hover { color: var(--fg); }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { font-size: 13px; color: var(--fg-muted); text-decoration: none; transition: color .15s; }
+    .footer-links a:hover { color: var(--fg); }
+
+    hr.sep { border: none; border-top: 1px solid var(--border); }
+
+    /* ── FADE IN ── */
+    .fade-in { opacity: 0; transform: translateY(16px); transition: opacity .55s ease, transform .55s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 700px) {
+      .mcp-box { grid-template-columns: 1fr; gap: 32px; padding: 28px; }
+      .how-client-body { flex-direction: column; gap: 20px; padding: 28px 24px; }
+      .how-server-steps { grid-template-columns: 1fr; }
+      .endpoint-desc { display: none; }
+      .nav-link { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="/" class="nav-logo">
+        <img src="/assets/logo.svg" alt="html-hoster" height="22" />
+      </a>
+      <p>html-hoster</p>
+    </div>
+    <div class="nav-links">
+      <a href="#como-funciona" class="nav-link" data-i18n="nav_how">Como funciona</a>
+      <a href="#api" class="nav-link" data-i18n="nav_api">API</a>
+      <a href="#mcp" class="nav-link" data-i18n="nav_mcp">MCP</a>
+      <a href="./api/docs" class="btn btn-outline btn-sm" data-i18n="nav_swagger">Swagger</a>
+      <a href="https://github.com/codebyant/html-hoster" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        <span data-i18n="nav_github">GitHub</span>
+      </a>
+
+      <!-- Language switcher -->
+      <div class="lang-switcher" id="lang-switcher">
+        <button class="lang-btn" id="lang-btn" onclick="toggleLangMenu(event)" aria-label="Change language">
+          <span id="lang-btn-flag">🇧🇷</span>
+          <span id="lang-btn-name">PT</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="lang-dropdown" id="lang-dropdown">
+          <div id="lang-options"></div>
+          <div class="lang-divider"></div>
+          <a href="https://github.com/codebyant/html-hoster/tree/main/public/i18n"
+             target="_blank" rel="noopener"
+             class="lang-contribute"
+             id="lang-contribute-link"
+             data-i18n-title="i18n_contribute_title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span data-i18n="i18n_contribute_label">Adicionar idioma</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    <span data-i18n="hero_badge">open source · MIT · MCP-ready</span>
+    <span style="opacity: 0.35; margin: 0 2px;">·</span>
+    <a href="https://antmiranda.dev" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">@codebyant</a>
+  </div>
+
+  <h1 data-i18n-html="hero_title">Seu agente não precisa<br><span>parar no Markdown.</span></h1>
+
+  <p class="hero-sub" data-i18n="hero_sub">Gere e publique HTML em segundos. Sem CMS. Sem painel. Sem build. Sem deploy manual.</p>
+
+  <div class="hero-actions">
+    <a href="https://github.com/codebyant/html-hoster" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      <span data-i18n="cta_primary">Ver no GitHub</span>
+    </a>
+    <a href="./api/docs" class="btn btn-outline">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span data-i18n="cta_secondary">Abrir Swagger</span>
+    </a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="como-funciona">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label" data-i18n="how_label">Como funciona</p>
+      <h2 class="section-title" data-i18n="how_title">Publique HTML gerado por IA sem deploy manual</h2>
+      <p class="section-sub" data-i18n="how_sub">Envie HTML, defina o path e receba uma URL pública pronta para compartilhar imediatamente.</p>
+    </div>
+
+    <div class="how-grid">
+      <!-- COLUNA DA ESQUERDA: Sequência de Passos -->
+      <div class="how-col-left fade-in">
+        <div class="how-step-card">
+          <div class="how-step-badge" data-i18n="how_step1_num">01</div>
+          <div class="how-step-info">
+            <h3 data-i18n="how_step1_title">Defina o Path</h3>
+            <p data-i18n-html="how_step1_body">Escolha o slug ou path público desejado (ex: <code>/my-page</code>). Sem subdomínios ou configurações complexas.</p>
+          </div>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-badge" data-i18n="how_step2_num">02</div>
+          <div class="how-step-info">
+            <h3 data-i18n="how_step2_title">Envie o HTML</h3>
+            <p data-i18n-html="how_step2_body">Publique via API, CLI ou use seu agente de IA (via MCP) integrado com sua API key configurada por env.</p>
+          </div>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-badge" data-i18n="how_step3_num">03</div>
+          <div class="how-step-info">
+            <h3 data-i18n="how_step3_title">Disponível Imediatamente</h3>
+            <p data-i18n-html="how_step3_body">O servidor valida, salva no storage (local ou S3) e serve o HTML estático instantaneamente. Sem painel ou builds.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA DA DIREITA: Widget de Visualização Técnica -->
+      <div class="how-col-right fade-in">
+        <div class="how-preview-card">
+          <div class="how-preview-header">
+            <div class="how-preview-dots">
+              <span class="how-preview-dot dot-red"></span>
+              <span class="how-preview-dot dot-yellow"></span>
+              <span class="how-preview-dot dot-green"></span>
+            </div>
+            <div class="how-preview-tabs">
+              <div class="how-preview-tab active" onclick="switchPreviewTab('agent')" id="how-tab-btn-agent" data-i18n="how_tab_agent">Agente de IA</div>
+              <div class="how-preview-tab" onclick="switchPreviewTab('api')" id="how-tab-btn-api" data-i18n="how_tab_api">API / cURL</div>
+            </div>
+          </div>
+          <div class="how-preview-body">
+            <!-- Tab 1: AI Agent Simulator -->
+            <div class="how-preview-pane active" id="how-pane-agent">
+              <div class="chat-body" id="chat-simulator-body" style="height: 100%; overflow-y: auto;">
+                <!-- As mensagens serão injetadas dinamicamente/animadas por JS -->
+              </div>
+            </div>
+            <!-- Tab 2: REST API Terminal -->
+            <div class="how-preview-pane" id="how-pane-api">
+              <pre><span class="t-dim">$</span> curl -X POST <span class="t-green">https://api.seusite.com/pages</span> \
+  -H <span class="t-yellow">"Authorization: Bearer $API_KEY"</span> \
+  -d <span class="t-blue">'{
+    "path": "/my-page",
+    "html": "&lt;main&gt;&lt;h1&gt;my-page&lt;/h1&gt;&lt;/main&gt;"
+  }'</span>
+
+<span class="t-dim">⬇ Response:</span>
+<span class="t-blue">{
+  <span class="t-purple">"success"</span>: <span class="t-green">true</span>,
+  <span class="t-purple">"url"</span>: <span class="t-green">"https://html.meusite.com/my-page"</span>
+}</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- FEATURES -->
+<section>
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label" data-i18n="feat_label">Funcionalidades</p>
+      <h2 class="section-title" data-i18n="feat_title">Tudo que você precisa, nada além</h2>
+      <p class="section-sub" data-i18n="feat_sub">Projetado para ser a camada de publicação de qualquer pipeline que gere HTML — manualmente ou por IA.</p>
+    </div>
+    <div class="features-grid fade-in">
+      <div class="feature-card">
+        <div class="feature-icon">🔑</div>
+        <h3 data-i18n="feat1_title">Autenticação por API Key</h3>
+        <p data-i18n-html="feat1_body">Todas as rotas de escrita exigem <code>Authorization: Bearer</code>. Chave configurada via variável de ambiente.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">☁️</div>
+        <h3 data-i18n="feat2_title">Storage local ou S3</h3>
+        <p data-i18n-html="feat2_body">Filesystem em desenvolvimento, S3 compatível (AWS, MinIO, R2) em produção. Camada abstrata intercambiável via <code>STORAGE_DRIVER</code>.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 data-i18n="feat3_title">MCP nativo para Claude</h3>
+        <p data-i18n-html="feat3_body">Servidor MCP embutido. Claude Desktop e Claude Code enxergam <code>publish_page</code>, <code>delete_page</code> e mais como tools nativas.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📤</div>
+        <h3 data-i18n="feat4_title">Upload de arquivo</h3>
+        <p data-i18n-html="feat4_body">Além do JSON, aceita upload de <code>.html</code> via <code>multipart/form-data</code>. Útil para pipelines com arquivos físicos.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3 data-i18n="feat5_title">Path seguro</h3>
+        <p data-i18n-html="feat5_body">Validação rígida contra path traversal, segmentos inválidos e prefixos reservados. Nenhum HTML vindo da API executa lógica server-side.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌗</div>
+        <h3 data-i18n="feat6_title">Modos dev, demo e production</h3>
+        <p data-i18n-html="feat6_body">Swagger visível só em dev/demo. Modo demo desativa writes e storage — ideal para mostrar o projeto sem risco.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3 data-i18n="feat7_title">Swagger integrado</h3>
+        <p data-i18n-html="feat7_body">Documentação OpenAPI 3.1 gerada automaticamente em <code>/api/docs</code>. Spec disponível em JSON para integração com qualquer ferramenta.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 data-i18n="feat8_title">Bun + Hono</h3>
+        <p data-i18n-html="feat8_body">Runtime rápido, TypeScript nativo, zero build step necessário em dev. Deploy em qualquer lugar que rode Bun.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- API -->
+<section id="api" style="background:var(--bg-2)">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label" data-i18n="api_label">API REST</p>
+      <h2 class="section-title" data-i18n="api_title">Endpoints</h2>
+      <p class="section-sub" data-i18n="api_sub">Interface HTTP simples. Qualquer linguagem, ferramenta externa ou IA com acesso HTTP consegue usar.</p>
+    </div>
+    <div class="endpoints fade-in">
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code class="endpoint-path">/api/pages</code>
+        <span class="endpoint-desc" data-i18n="ep0_desc">Lista todas as páginas publicadas</span>
+        <span class="endpoint-badge" data-i18n="ep_badge_auth">🔒 auth</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-put">PUT</span>
+        <code class="endpoint-path">/api/pages/:path</code>
+        <span class="endpoint-desc" data-i18n="ep1_desc">Publica ou atualiza uma página via JSON</span>
+        <span class="endpoint-badge" data-i18n="ep_badge_auth">🔒 auth</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <code class="endpoint-path">/api/pages/:path</code>
+        <span class="endpoint-desc" data-i18n="ep2_desc">Publica via upload de arquivo (multipart)</span>
+        <span class="endpoint-badge" data-i18n="ep_badge_auth">🔒 auth</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code class="endpoint-path">/api/pages/:path</code>
+        <span class="endpoint-desc" data-i18n="ep3_desc">Retorna metadados da página</span>
+        <span class="endpoint-badge" data-i18n="ep_badge_auth">🔒 auth</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-delete">DELETE</span>
+        <code class="endpoint-path">/api/pages/:path</code>
+        <span class="endpoint-desc" data-i18n="ep4_desc">Remove a página publicada</span>
+        <span class="endpoint-badge" data-i18n="ep_badge_auth">🔒 auth</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code class="endpoint-path">/:path</code>
+        <span class="endpoint-desc" data-i18n="ep5_desc">Serve o HTML publicamente</span>
+        <span class="endpoint-badge pub" data-i18n="ep_badge_pub">público</span>
+      </div>
+    </div>
+
+    <div class="code-block fade-in">
+      <div class="code-tabs">
+        <div class="code-tab active" data-tab="publish" onclick="showTab(this,'publish')" data-i18n="tab_publish">Publicar</div>
+        <div class="code-tab" data-tab="upload" onclick="showTab(this,'upload')" data-i18n="tab_upload">Upload arquivo</div>
+        <div class="code-tab" data-tab="delete" onclick="showTab(this,'delete')" data-i18n="tab_delete">Deletar</div>
+      </div>
+      <div class="code-body active" id="tab-publish">
+        <pre><span class="t-dim"># Publicar ou atualizar</span>
+curl -X PUT https://html.seusite.com/api/pages/<span class="t-green">my-page</span> \
+  -H <span class="t-yellow">"Authorization: Bearer sua-chave"</span> \
+  -H <span class="t-yellow">"Content-Type: application/json"</span> \
+  -d <span class="t-blue">'{"html":"&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;body&gt;&lt;h1&gt;my-page&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;"}'</span>
+
+<span class="t-dim">{ "success": true, "url": "</span><span class="t-green">https://html.seusite.com/my-page</span><span class="t-dim">", "path": "my-page" }</span></pre>
+      </div>
+      <div class="code-body" id="tab-upload">
+        <pre><span class="t-dim"># Upload de arquivo</span>
+curl -X POST https://html.seusite.com/api/pages/<span class="t-green">my-page</span> \
+  -H <span class="t-yellow">"Authorization: Bearer sua-chave"</span> \
+  -F <span class="t-blue">"file=@minha-pagina.html"</span>
+
+<span class="t-dim">{ "success": true, "url": "</span><span class="t-green">https://html.seusite.com/my-page</span><span class="t-dim">", "path": "my-page" }</span></pre>
+      </div>
+      <div class="code-body" id="tab-delete">
+        <pre><span class="t-dim"># Deletar</span>
+curl -X DELETE https://html.seusite.com/api/pages/<span class="t-green">my-page</span> \
+  -H <span class="t-yellow">"Authorization: Bearer sua-chave"</span>
+
+<span class="t-dim">{ "success": true, "path": "my-page" }</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="sep" />
+
+<!-- MCP -->
+<section id="mcp">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label" data-i18n="mcp_label">INTEGRAÇÃO COM IA</p>
+      <h2 class="section-title" data-i18n="mcp_title">MCP nativo para qualquer agente compatível</h2>
+      <p class="section-sub" data-i18n="mcp_sub">Configure o servidor MCP uma vez e permita que sua IA publique, atualize e gerencie páginas HTML usando ferramentas estruturadas.</p>
+    </div>
+    <div class="mcp-box fade-in">
+      <div>
+        <h3 data-i18n="mcp_box_title">Ferramentas MCP prontas para uso</h3>
+        <p data-i18n="mcp_box_sub">Seu agente não precisa improvisar chamadas HTTP. Ele recebe tools tipadas para publicar, listar, consultar e remover páginas com segurança.</p>
+        <div style="margin-bottom: 24px;">
+          <a href="https://github.com/codebyant/html-hoster#mcp-server-claude-integration" target="_blank" rel="noopener" class="btn btn-outline btn-sm" data-i18n="mcp_view_config">Ver configuração →</a>
+        </div>
+        <p class="mcp-compat" style="font-size: 13px; color: var(--fg-muted); margin: 0; border-top: 1px solid var(--border); padding-top: 16px;" data-i18n="mcp_compatible_text">
+          Compatível com: Claude Desktop, Claude Code, Cursor, clientes MCP customizados e outros agentes compatíveis.
+        </p>
+      </div>
+      <div class="mcp-tools">
+        <div class="mcp-tool">
+          <span class="mcp-tool-name">publish_page</span>
+          <span class="mcp-tool-desc" data-i18n="mcp_t1">Publica ou atualiza HTML em um path.</span>
+        </div>
+        <div class="mcp-tool">
+          <span class="mcp-tool-name">get_page_meta</span>
+          <span class="mcp-tool-desc" data-i18n="mcp_t2">Retorna URL, metadata e data de atualização.</span>
+        </div>
+        <div class="mcp-tool">
+          <span class="mcp-tool-name">delete_page</span>
+          <span class="mcp-tool-desc" data-i18n="mcp_t3">Remove uma página publicada.</span>
+        </div>
+        <div class="mcp-tool">
+          <span class="mcp-tool-name">list_pages</span>
+          <span class="mcp-tool-desc" data-i18n="mcp_t4">Lista páginas publicadas e suas URLs.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block fade-in" style="margin-top:24px">
+      <div class="code-tabs">
+        <div class="code-tab active" data-i18n="mcp_config_title">Configuração em um cliente MCP</div>
+      </div>
+      <div class="code-body active">
+        <p style="font-size: 13.5px; color: var(--fg-muted); margin-top: 0; margin-bottom: 16px; line-height: 1.6;" data-i18n="mcp_config_desc">
+          O exemplo abaixo demonstra a integração com o Claude Desktop. O servidor funciona de forma idêntica em qualquer cliente compatível.
+        </p>
+        <pre><span class="t-dim">{
+  "mcpServers": {</span>
+    <span class="t-yellow">"html-hoster"</span><span class="t-dim">: {</span>
+      <span class="t-blue">"command"</span><span class="t-dim">:</span> <span class="t-green">"npx"</span><span class="t-dim">,</span>
+      <span class="t-blue">"args"</span><span class="t-dim">: [</span>
+        <span class="t-green">"-y"</span><span class="t-dim">,</span>
+        <span class="t-green">"mcp-remote@latest"</span><span class="t-dim">,</span>
+        <span class="t-green">"https://html.seusite.com/mcp"</span><span class="t-dim">,</span>
+        <span class="t-green">"--header"</span><span class="t-dim">,</span>
+        <span class="t-green">"Authorization:${HTML_HOSTER_AUTH}"</span>
+      <span class="t-dim">],</span>
+      <span class="t-blue">"env"</span><span class="t-dim">: {</span>
+        <span class="t-purple">"HTML_HOSTER_AUTH"</span><span class="t-dim">:</span> <span class="t-green">"Bearer sua-chave"</span>
+      <span class="t-dim">}
+    }
+  }
+}</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 data-i18n="cta_title">Pronto para publicar sua primeira página?</h2>
+  <p data-i18n="cta_sub">Open source, MIT, sem custo de licença. Faça o deploy em qualquer lugar que rode Bun.</p>
+  <div class="cta-actions">
+    <a href="https://github.com/codebyant/html-hoster" target="_blank" rel="noopener" class="btn btn-primary">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+      <span data-i18n="cta_primary">Ver no GitHub</span>
+    </a>
+    <a href="./api/docs" class="btn btn-outline" data-i18n="cta_secondary">Explorar a API →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <p class="footer-left">
+      <span data-i18n="footer_by">Feito por</span>
+      <a href="https://antmiranda.dev" target="_blank" rel="noopener"> Antônio Miranda</a>
+      · <a href="https://github.com/codebyant" target="_blank" rel="noopener">@codebyant</a>
+      · <span data-i18n="footer_license">MIT License</span>
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/codebyant/html-hoster" target="_blank" rel="noopener">GitHub</a>
+      <a href="./api/docs" data-i18n="nav_swagger">Swagger</a>
+      <a href="https://antmiranda.dev" target="_blank" rel="noopener">antmiranda.dev</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── i18n ──────────────────────────────────────────────────────────────────
+  const CACHE = {};
+  let CURRENT = 'pt';
+
+  const KNOWN_LANGS = ['pt', 'en'];
+
+  async function load_lang(lang) {
+    if (CACHE[lang]) return CACHE[lang];
+    try {
+      const r = await fetch(`/i18n/${lang}.json`);
+      if (!r.ok) return null;
+      CACHE[lang] = await r.json();
+      return CACHE[lang];
+    } catch { return null; }
+  }
+
+  // ── Chat Simulator ────────────────────────────────────────────────────────
+  let chatTimer = null;
+  function resetChatSimulation() {
+    if (chatTimer) {
+      clearTimeout(chatTimer);
+      chatTimer = null;
+    }
+    const container = document.getElementById('chat-simulator-body');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const t = CACHE[CURRENT] || {};
+    const messages = [
+      { type: 'user', text: t.chat_user || 'Crie um HTML elegante para uma cafeteria e publique em cafe-expresso' },
+      { type: 'typing', delay: 800 },
+      { type: 'assistant', text: t.chat_assistant_thinking || 'Claro! Gerando um design moderno com cardápio, cores quentes e tipografia elegante. Publicando...' },
+      { type: 'tool', text: t.chat_tool_call || '🔧 Executando <code>publish_page("cafe-expresso", html)</code>' },
+      { type: 'system', text: t.chat_system_response || '✅ Sucesso! Página persistida com sucesso.' },
+      { type: 'typing', delay: 600 },
+      { type: 'assistant', text: t.chat_assistant_done || 'Pronto! O HTML já está hospedado e a URL pública está no ar: <br>🚀 <strong><a href="#" onclick="event.preventDefault();">html.seusite.com/cafe-expresso</a></strong>' }
+    ];
+
+    let currentStep = 0;
+
+    function nextStep() {
+      if (currentStep >= messages.length) {
+        chatTimer = setTimeout(() => {
+          resetChatSimulation();
+        }, 8000);
+        return;
+      }
+
+      const msg = messages[currentStep];
+      
+      const typingEl = container.querySelector('.chat-typing');
+      if (typingEl) typingEl.remove();
+
+      if (msg.type === 'typing') {
+        const tempTyping = document.createElement('div');
+        tempTyping.className = 'chat-typing';
+        tempTyping.innerHTML = '<span class="chat-typing-dot"></span><span class="chat-typing-dot"></span><span class="chat-typing-dot"></span>';
+        container.appendChild(tempTyping);
+        container.scrollTop = container.scrollHeight;
+        
+        currentStep++;
+        chatTimer = setTimeout(nextStep, msg.delay || 1000);
+      } else if (msg.type === 'tool') {
+        const toolEl = document.createElement('div');
+        toolEl.className = 'chat-tool-call';
+        toolEl.innerHTML = msg.text;
+        container.appendChild(toolEl);
+        container.scrollTop = container.scrollHeight;
+
+        currentStep++;
+        chatTimer = setTimeout(nextStep, 1600);
+      } else if (msg.type === 'system') {
+        const sysEl = document.createElement('div');
+        sysEl.className = 'chat-bubble system';
+        sysEl.innerHTML = msg.text;
+        container.appendChild(sysEl);
+        container.scrollTop = container.scrollHeight;
+
+        currentStep++;
+        chatTimer = setTimeout(nextStep, 1200);
+      } else {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${msg.type}`;
+        bubble.innerHTML = msg.text;
+        container.appendChild(bubble);
+        container.scrollTop = container.scrollHeight;
+
+        currentStep++;
+        chatTimer = setTimeout(nextStep, msg.type === 'user' ? 1800 : 3000);
+      }
+    }
+
+    nextStep();
+  }
+
+  function apply(t) {
+    if (!t) return;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t[el.dataset.i18n];
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const v = t[el.dataset.i18nHtml];
+      if (v !== undefined) el.innerHTML = v;
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const v = t[el.dataset.i18nTitle];
+      if (v !== undefined) el.title = v;
+    });
+    const meta = t['_meta'] || {};
+    document.documentElement.lang = meta.lang || CURRENT;
+    const flag = document.getElementById('lang-btn-flag');
+    const name = document.getElementById('lang-btn-name');
+    if (flag) flag.textContent = meta.flag || '';
+    if (name) name.textContent = meta.name ? meta.name.slice(0, 2).toUpperCase() : CURRENT.toUpperCase();
+    build_lang_menu(t);
+    resetChatSimulation();
+  }
+
+  function build_lang_menu(active_t) {
+    const container = document.getElementById('lang-options');
+    if (!container) return;
+    container.innerHTML = '';
+    KNOWN_LANGS.forEach(code => {
+      const cached = CACHE[code];
+      if (!cached) return;
+      const meta = cached['_meta'] || {};
+      const div = document.createElement('div');
+      div.className = 'lang-option' + (code === CURRENT ? ' active' : '');
+      div.innerHTML = `<span>${meta.flag || ''}</span><span>${meta.name || code}</span>`;
+      div.onclick = () => set_lang(code);
+      container.appendChild(div);
+    });
+  }
+
+  async function set_lang(lang) {
+    const t = await load_lang(lang);
+    if (!t) return;
+    CURRENT = lang;
+    localStorage.setItem('lang', lang);
+    apply(t);
+    close_lang_menu();
+  }
+
+  function toggleLangMenu(e) {
+    e.stopPropagation();
+    document.getElementById('lang-dropdown').classList.toggle('open');
+  }
+  function close_lang_menu() {
+    document.getElementById('lang-dropdown').classList.remove('open');
+  }
+  document.addEventListener('click', close_lang_menu);
+
+  // Detect language
+  const stored  = localStorage.getItem('lang');
+  const browser = (navigator.language || 'pt').slice(0, 2).toLowerCase();
+  const initial = stored || (KNOWN_LANGS.includes(browser) ? browser : 'en');
+
+  // Pre-load both so the switcher dropdown can show names immediately
+  (async () => {
+    await Promise.all(KNOWN_LANGS.map(load_lang));
+    set_lang(initial);
+  })();
+
+  // ── Tabs ──────────────────────────────────────────────────────────────────
+  function showTab(btn, name) {
+    const block = btn.closest('.code-block');
+    block.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    block.querySelectorAll('.code-body').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const body = document.getElementById('tab-' + name);
+    if (body) body.classList.add('active');
+  }
+
+  function switchPreviewTab(tabName) {
+    const agentTab = document.getElementById('how-tab-btn-agent');
+    const apiTab = document.getElementById('how-tab-btn-api');
+    const agentPane = document.getElementById('how-pane-agent');
+    const apiPane = document.getElementById('how-pane-api');
+
+    if (tabName === 'agent') {
+      agentTab.classList.add('active');
+      apiTab.classList.remove('active');
+      agentPane.classList.add('active');
+      apiPane.classList.remove('active');
+      resetChatSimulation();
+    } else {
+      agentTab.classList.remove('active');
+      apiTab.classList.add('active');
+      agentPane.classList.remove('active');
+      apiPane.classList.add('active');
+    }
+  }
+
+  // ── Scroll fade-in ────────────────────────────────────────────────────────
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

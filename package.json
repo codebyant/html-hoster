@@ -1,0 +1,22 @@
+{
+  "name": "html-hoster",
+  "version": "1.0.0",
+  "description": "Host static HTML pages via API",
+  "module": "src/index.ts",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "bun build src/index.ts --outfile dist/index.js --target bun --minify",
+    "typecheck": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@hono/swagger-ui": "^0.6.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "hono": "^4.4.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "typescript": "^5.5.0"
+  }
+}
