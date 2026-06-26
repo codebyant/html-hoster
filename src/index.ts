@@ -17,6 +17,11 @@ if (config.swagger_enabled) {
   app.route("/api/docs", docs_router);
 }
 
+// Health check — no auth, always 200
+app.get("/health", (c) =>
+  c.json({ status: "ok", mode: config.app_env, uptime: process.uptime() })
+);
+
 app.route("/api", api_router);
 app.route("/mcp", mcp_router);
 

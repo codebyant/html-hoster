@@ -150,12 +150,11 @@ curl -N -H "Authorization: Bearer $API_KEY" \
 | `ROOT_REDIRECT` | no | — | Redirect `/` to this URL (takes priority over `DISABLE_LANDING`) |
 | `MAX_HTML_SIZE_MB` | no | `5` | Max HTML payload in MB |
 | `PORT` | no | `3000` | HTTP port |
-| `S3_ENDPOINT` | s3 | — | Custom S3 endpoint (e.g. MinIO, R2) |
-| `S3_REGION` | s3 | `us-east-1` | Bucket region |
-| `S3_BUCKET` | s3 | — | Bucket name |
-| `S3_ACCESS_KEY_ID` | s3 | — | Access key |
-| `S3_SECRET_ACCESS_KEY` | s3 | — | Secret key |
-| `S3_PUBLIC_URL` | s3 | — | Public base URL for the bucket |
+| `S3_BUCKET` | s3 | — | Bucket name (required for s3) |
+| `S3_ACCESS_KEY_ID` | s3 | — | Access key (required for s3) |
+| `S3_SECRET_ACCESS_KEY` | s3 | — | Secret key (required for s3) |
+| `S3_REGION` | no | `us-east-1` | Bucket region |
+| `S3_ENDPOINT` | no | — | Custom endpoint (MinIO, R2, non-AWS) |
 
 ### App modes (`APP_ENV`)
 

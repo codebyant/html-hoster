@@ -26,6 +26,5 @@ export const config = {
     bucket: process.env.S3_BUCKET ?? "",
     access_key_id: process.env.S3_ACCESS_KEY_ID ?? "",
     secret_access_key: process.env.S3_SECRET_ACCESS_KEY ?? "",
-    public_url: (process.env.S3_PUBLIC_URL ?? "").replace(/\/$/, ""),
   },
 };
