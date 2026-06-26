@@ -2,6 +2,8 @@
 
 Publish static HTML pages via REST API or AI agent. Send HTML, get a public URL — no CMS, no dashboard, no deploy pipeline.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/S3ggQm?referralCode=EeixAa&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 ```bash
 curl -X PUT https://html.yoursite.com/api/pages/hello \
   -H "Authorization: Bearer $API_KEY" \
@@ -170,7 +172,9 @@ curl -N -H "Authorization: Bearer $API_KEY" \
 
 ### Railway (recommended)
 
-The repo includes `railway.toml` and `nixpacks.toml`. Connect the GitHub repo to Railway and set the required variables in the dashboard:
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/S3ggQm?referralCode=EeixAa&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+One-click deploy with the button above, or connect the GitHub repo manually. The repo includes `railway.toml` and `nixpacks.toml`. Set the required variables in the dashboard:
 
 ```
 API_KEY=...
