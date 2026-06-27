@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "Carregando…",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "close": "Fechar",
+    "retry": "Tentar novamente",
+    "back": "← Voltar",
+    "continue": "Continuar",
+    "update": "Atualizar",
+    "delete": "Excluir",
+    "remove": "Remover",
+    "copied": "Copiado!"
+  },
+  "titleBar": {
+    "hide": "Ocultar (app permanece na bandeja)"
+  },
+  "nav": {
+    "upload": "Upload",
+    "pages": "Páginas",
+    "settings": "Configurações"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "html-hoster Companion",
+      "subtitle": "Um app leve para publicar e gerenciar suas páginas HTML estáticas.",
+      "feature1": "Faça upload de arquivos HTML para qualquer caminho",
+      "feature2": "Gerencie e atualize suas páginas publicadas",
+      "feature3": "Copie ou abra URLs públicas instantaneamente",
+      "getStarted": "Começar"
+    },
+    "apiUrl": {
+      "title": "URL da API",
+      "description": "Informe a URL base da sua instância html-hoster.",
+      "label": "URL da API",
+      "placeholder": "https://html.seudominio.com/api",
+      "hint": "Formato: https://seudominio.com/api  (sem /pages no final)",
+      "testingConnection": "Testando conexão…",
+      "connectionSuccessful": "✓ Conexão bem-sucedida",
+      "invalidUrl": "URL inválida"
+    },
+    "apiKey": {
+      "title": "Chave de API",
+      "description": "Sua chave de API é armazenada com segurança no chaveiro do SO — nunca em texto simples no disco.",
+      "label": "Chave de API",
+      "placeholder": "Insira sua chave de API",
+      "verifying": "Verificando…",
+      "authSuccessful": "✓ Autenticação bem-sucedida",
+      "keyringNote": "Armazenada no chaveiro do SO (Gerenciador de Credenciais do Windows / Keychain do macOS / Secret Service do Linux)",
+      "failedToStore": "Falha ao armazenar chave de API no chaveiro: {{error}}",
+      "keyRequired": "Chave de API obrigatória",
+      "authFailed": "Falha na autenticação"
+    },
+    "done": {
+      "title": "Tudo pronto!",
+      "description": "O Companion está configurado e pronto. Agora você pode fazer upload de arquivos HTML, gerenciar páginas e ajustar configurações pelo ícone na bandeja.",
+      "tip": "O app permanece na bandeja do sistema — feche esta janela quando quiser sem sair do app.",
+      "startButton": "Começar a usar o Companion"
+    }
+  },
+  "upload": {
+    "pathLabel": "Caminho",
+    "newRandomPath": "Novo caminho aleatório",
+    "htmlFileLabel": "Arquivo HTML",
+    "uploading": "Enviando…",
+    "uploadButton": "Enviar",
+    "publishedAt": "Publicado em:",
+    "copyUrl": "Copiar URL",
+    "open": "Abrir",
+    "success": "Página enviada com sucesso",
+    "urlCopied": "URL copiada para a área de transferência",
+    "noFileSelected": "Selecione um arquivo HTML",
+    "invalidPath": "Caminho inválido",
+    "notificationSuccess": "Upload bem-sucedido",
+    "notificationFailed": "Falha no upload",
+    "notificationBodyCopied": "URL copiada para a área de transferência",
+    "notificationBodyLive": "/{{path}} está ativo"
+  },
+  "pages": {
+    "loading": "Carregando páginas…",
+    "failedToLoad": "Falha ao carregar páginas",
+    "configHint": "Vá em Configurações → Chave de API para inserir ou reinserir sua chave.",
+    "noPages": "Nenhuma página ainda",
+    "noPagesHint": "Faça upload do seu primeiro arquivo HTML na aba Upload.",
+    "pageCount_one": "{{count}} página",
+    "pageCount_other": "{{count}} páginas",
+    "refresh": "Atualizar",
+    "updatedOn": "Atualizado em {{date}}",
+    "openInBrowser": "Abrir no navegador",
+    "copyUrl": "Copiar URL",
+    "updateHtml": "Atualizar HTML",
+    "editRoute": "Editar rota",
+    "pathUpdated": "Caminho atualizado",
+    "pageUpdated": "Página atualizada",
+    "pageDeleted": "Página excluída",
+    "noFileSelected": "Nenhum arquivo selecionado"
+  },
+  "editPath": {
+    "title": "Editar Rota",
+    "newPathLabel": "Novo caminho",
+    "description": "Isso vai buscar o HTML existente da URL pública, criar o novo caminho e excluir o antigo.",
+    "invalidPath": "Caminho inválido"
+  },
+  "deletePage": {
+    "title": "Excluir página",
+    "message": "Excluir \"/{{path}}\"? Isso não pode ser desfeito.",
+    "confirm": "Excluir"
+  },
+  "settings": {
+    "apiConnection": "Conexão da API",
+    "apiUrlLabel": "URL da API",
+    "apiUrlPlaceholder": "https://html.seudominio.com/api  (sem /pages)",
+    "connectionOk": "Conexão OK",
+    "testConnection": "Testar conexão",
+    "saveUrl": "Salvar URL",
+    "apiUrlSaved": "URL da API salva",
+    "connectionFailed": "Falha na conexão",
+    "invalidUrl": "URL inválida",
+    "apiKey": "Chave de API",
+    "keyStored": "Chave armazenada no chaveiro do SO",
+    "newApiKeyLabel": "Nova chave de API",
+    "newKeyPlaceholder": "Cole a nova chave para substituir",
+    "updateKey": "Atualizar chave",
+    "removeKey": "Remover chave",
+    "keyRequired": "Chave de API obrigatória",
+    "saveUrlFirst": "Salve a URL da API primeiro",
+    "keyringError": "Erro no chaveiro: {{error}}",
+    "keyUpdated": "Chave de API atualizada",
+    "keyRemoved": "Chave de API removida",
+    "afterUpload": "Após upload",
+    "openInBrowser": "Abrir URL no navegador",
+    "copyToClipboard": "Copiar URL para área de transferência",
+    "doNothing": "Não fazer nada",
+    "system": "Sistema",
+    "desktopNotifications": "Notificações de área de trabalho",
+    "startWithSystem": "Iniciar com o sistema",
+    "shortcutLabel": "Atalho de teclado para mostrar/ocultar",
+    "pressKeys": "Pressione as teclas…",
+    "notSet": "Não definido",
+    "record": "Gravar",
+    "cancelRecord": "Cancelar",
+    "discardShortcut": "Descartar",
+    "clearShortcut": "Limpar",
+    "shortcutSaved": "Atalho salvo",
+    "shortcutCleared": "Atalho removido",
+    "invalidShortcut": "Atalho inválido: {{error}}",
+    "updates": "Atualizações",
+    "checkForUpdates": "Verificar atualizações",
+    "upToDate": "Atualizado",
+    "updateAvailable": "Atualização disponível!",
+    "checkFailed": "Verificação falhou",
+    "failedToCheckUpdates": "Falha ao verificar atualizações",
+    "updateAvailableToast": "Atualização {{version}} disponível",
+    "removeKeyTitle": "Remover chave de API",
+    "removeKeyMessage": "Isso vai remover a chave de API do chaveiro do SO. Você precisará inseri-la novamente para usar o Companion.",
+    "authFailed": "Falha na autenticação"
+  },
+  "dropzone": {
+    "onlyHtml": "Apenas arquivos .html são aceitos",
+    "fileTooLarge": "Arquivo excede o limite de {{maxMB}} MB",
+    "invalidFile": "Arquivo inválido",
+    "clickOrDragToReplace": "clique ou arraste para substituir",
+    "dropHere": "Solte o arquivo aqui",
+    "dragHtml": "Arraste um arquivo HTML aqui",
+    "clickToSelect": "ou clique para selecionar · máx {{maxMB}} MB"
+  },
+  "fileValidation": {
+    "onlyHtml": "Apenas arquivos .html são aceitos",
+    "mustBeHtml": "O arquivo deve ser text/html",
+    "fileEmpty": "O arquivo está vazio",
+    "fileTooLarge": "Arquivo excede o limite de {{maxMB}} MB"
+  },
+  "about": {
+    "title": "Sobre",
+    "version": "Versão {{version}}",
+    "openSource": "Código aberto",
+    "license": "Licença MIT",
+    "viewOnGitHub": "Ver no GitHub",
+    "copyright": "© 2026 Antônio Miranda"
+  },
+  "language": {
+    "label": "Idioma",
+    "auto": "Automático (sistema)",
+    "changed": "Idioma alterado"
+  },
+  "validation": {
+    "pathRequired": "Caminho obrigatório",
+    "pathMustStartWithSlash": "O caminho deve começar com /",
+    "pathTraversal": "Traversal de caminho não permitido",
+    "doubleSlashes": "Barras duplas não permitidas",
+    "pathNoSpaces": "O caminho não pode conter espaços",
+    "pathInvalidChars": "Apenas letras, números, hifens e underscores são permitidos",
+    "pathMaxSegments": "Máximo de 5 segmentos de caminho",
+    "pathReserved": "O caminho não pode começar com \"api\" (reservado)",
+    "apiUrlRequired": "URL da API obrigatória",
+    "apiUrlInvalid": "Deve ser uma URL válida",
+    "apiKeyRequired": "Chave de API obrigatória"
+  }
+}

@@ -101,6 +101,13 @@ function build_mcp_server(): Server {
         description: "List all published pages with their public URLs and last-updated timestamps.",
         inputSchema: { type: "object", properties: {} },
       },
+      {
+        name: "get_server_config",
+        description:
+          "Return server-side configuration: the maximum allowed HTML file size and the public base URL. " +
+          "Use this before publishing to know the actual size limit enforced by the server.",
+        inputSchema: { type: "object", properties: {} },
+      },
     ],
   }));
 
@@ -156,6 +163,13 @@ function build_mcp_server(): Server {
       case "list_pages": {
         const pages = await storage.list();
         return ok(pages.map((p) => ({ ...p, url: `${config.public_base_url}/${p.path}` })));
+      }
+
+      case "get_server_config": {
+        return ok({
+          max_file_size_mb: config.max_html_bytes / 1024 / 1024,
+          base_url: config.public_base_url,
+        });
       }
 
       default:

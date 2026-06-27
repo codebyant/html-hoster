@@ -1,0 +1,59 @@
+/* Design tokens mirroring the landing page */
+:root {
+  --bg:       #0a0a0a;
+  --bg-2:     #111111;
+  --bg-card:  rgba(255, 255, 255, 0.03);
+  --fg:       #fafafa;
+  --fg-sub:   #a1a1aa;
+  --fg-muted: #71717a;
+  --primary:  oklch(0.57 0.1998 285.02);
+  --primary-hover: oklch(0.62 0.1998 285.02);
+  --primary-glow: oklch(0.57 0.1998 285.02 / 0.15);
+  --border:   rgba(255, 255, 255, 0.08);
+  --border-h: rgba(255, 255, 255, 0.15);
+  --radius:   12px;
+  --font:     'Inter', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --success:  #86efac;
+  --error:    #fca5a5;
+  --warning:  #fde68a;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollable areas */
+.scrollable {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+.scrollable::-webkit-scrollbar { width: 4px; }
+.scrollable::-webkit-scrollbar-track { background: transparent; }
+.scrollable::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+
+/* Drag region for frameless window */
+[data-tauri-drag-region] {
+  -webkit-app-region: drag;
+}
+[data-tauri-drag-region] * {
+  -webkit-app-region: no-drag;
+}

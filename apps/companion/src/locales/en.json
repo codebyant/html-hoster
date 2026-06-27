@@ -1,0 +1,199 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "retry": "Retry",
+    "back": "← Back",
+    "continue": "Continue",
+    "update": "Update",
+    "delete": "Delete",
+    "remove": "Remove",
+    "copied": "Copied!"
+  },
+  "titleBar": {
+    "hide": "Hide (app stays in tray)"
+  },
+  "nav": {
+    "upload": "Upload",
+    "pages": "Pages",
+    "settings": "Settings"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "html-hoster Companion",
+      "subtitle": "A lightweight desktop companion to publish and manage your static HTML pages.",
+      "feature1": "Upload HTML files to any custom path",
+      "feature2": "Manage and update your published pages",
+      "feature3": "Copy or open public URLs instantly",
+      "getStarted": "Get Started"
+    },
+    "apiUrl": {
+      "title": "API URL",
+      "description": "Enter the base URL of your html-hoster instance.",
+      "label": "API URL",
+      "placeholder": "https://html.yourdomain.com/api",
+      "hint": "Format: https://yourdomain.com/api  (without /pages at the end)",
+      "testingConnection": "Testing connection…",
+      "connectionSuccessful": "✓ Connection successful",
+      "invalidUrl": "Invalid URL"
+    },
+    "apiKey": {
+      "title": "API Key",
+      "description": "Your API key is stored securely in the OS keyring — never on disk in plain text.",
+      "label": "API Key",
+      "placeholder": "Enter your API key",
+      "verifying": "Verifying…",
+      "authSuccessful": "✓ Authentication successful",
+      "keyringNote": "Stored in OS keyring (Windows Credential Manager / macOS Keychain / Linux Secret Service)",
+      "failedToStore": "Failed to store API key in keyring: {{error}}",
+      "keyRequired": "API key is required",
+      "authFailed": "Authentication failed"
+    },
+    "done": {
+      "title": "All set!",
+      "description": "The companion is configured and ready. You can now upload HTML files, manage pages, and tweak settings from the tray icon.",
+      "tip": "The app stays in your system tray — close this window anytime without quitting.",
+      "startButton": "Start using Companion"
+    }
+  },
+  "upload": {
+    "pathLabel": "Path",
+    "newRandomPath": "New random path",
+    "htmlFileLabel": "HTML File",
+    "uploading": "Uploading…",
+    "uploadButton": "Upload",
+    "publishedAt": "Published at:",
+    "copyUrl": "Copy URL",
+    "open": "Open",
+    "success": "Page uploaded successfully",
+    "urlCopied": "URL copied to clipboard",
+    "noFileSelected": "Please select an HTML file",
+    "invalidPath": "Invalid path",
+    "notificationSuccess": "Upload successful",
+    "notificationFailed": "Upload failed",
+    "notificationBodyCopied": "URL copied to clipboard",
+    "notificationBodyLive": "/{{path}} is live"
+  },
+  "pages": {
+    "loading": "Loading pages…",
+    "failedToLoad": "Failed to load pages",
+    "configHint": "Go to Settings → API Key to enter or re-enter your key.",
+    "noPages": "No pages yet",
+    "noPagesHint": "Upload your first HTML file from the Upload tab.",
+    "pageCount_one": "{{count}} page",
+    "pageCount_other": "{{count}} pages",
+    "refresh": "Refresh",
+    "updatedOn": "Updated {{date}}",
+    "openInBrowser": "Open in browser",
+    "copyUrl": "Copy URL",
+    "updateHtml": "Update HTML",
+    "editRoute": "Edit route",
+    "pathUpdated": "Path updated",
+    "pageUpdated": "Page updated",
+    "pageDeleted": "Page deleted",
+    "noFileSelected": "No file selected"
+  },
+  "editPath": {
+    "title": "Edit Route",
+    "newPathLabel": "New path",
+    "description": "This will fetch the existing HTML from the public URL, create the new path, and delete the old one.",
+    "invalidPath": "Invalid path"
+  },
+  "deletePage": {
+    "title": "Delete page",
+    "message": "Delete \"/{{path}}\"? This cannot be undone.",
+    "confirm": "Delete"
+  },
+  "settings": {
+    "apiConnection": "API Connection",
+    "apiUrlLabel": "API URL",
+    "apiUrlPlaceholder": "https://html.yourdomain.com/api  (without /pages)",
+    "connectionOk": "Connection OK",
+    "testConnection": "Test connection",
+    "saveUrl": "Save URL",
+    "apiUrlSaved": "API URL saved",
+    "connectionFailed": "Connection failed",
+    "invalidUrl": "Invalid URL",
+    "apiKey": "API Key",
+    "keyStored": "Key stored in OS keyring",
+    "newApiKeyLabel": "New API key",
+    "newKeyPlaceholder": "Paste new key to replace",
+    "updateKey": "Update key",
+    "removeKey": "Remove key",
+    "keyRequired": "API key is required",
+    "saveUrlFirst": "Save API URL first",
+    "keyringError": "Keyring error: {{error}}",
+    "keyUpdated": "API key updated",
+    "keyRemoved": "API key removed",
+    "afterUpload": "After upload",
+    "openInBrowser": "Open URL in browser",
+    "copyToClipboard": "Copy URL to clipboard",
+    "doNothing": "Do nothing",
+    "system": "System",
+    "desktopNotifications": "Desktop notifications",
+    "startWithSystem": "Start with system",
+    "shortcutLabel": "Keyboard shortcut to show/hide",
+    "pressKeys": "Press keys…",
+    "notSet": "Not set",
+    "record": "Record",
+    "cancelRecord": "Cancel",
+    "discardShortcut": "Discard",
+    "clearShortcut": "Clear",
+    "shortcutSaved": "Shortcut saved",
+    "shortcutCleared": "Shortcut cleared",
+    "invalidShortcut": "Invalid shortcut: {{error}}",
+    "updates": "Updates",
+    "checkForUpdates": "Check for updates",
+    "upToDate": "Up to date",
+    "updateAvailable": "Update available!",
+    "checkFailed": "Check failed",
+    "failedToCheckUpdates": "Failed to check for updates",
+    "updateAvailableToast": "Update {{version}} available",
+    "removeKeyTitle": "Remove API key",
+    "removeKeyMessage": "This will remove the API key from the OS keyring. You'll need to re-enter it to use the companion.",
+    "authFailed": "Authentication failed"
+  },
+  "dropzone": {
+    "onlyHtml": "Only .html files are accepted",
+    "fileTooLarge": "File exceeds {{maxMB}} MB limit",
+    "invalidFile": "Invalid file",
+    "clickOrDragToReplace": "click or drag to replace",
+    "dropHere": "Drop the file here",
+    "dragHtml": "Drag an HTML file here",
+    "clickToSelect": "or click to select · max {{maxMB}} MB"
+  },
+  "fileValidation": {
+    "onlyHtml": "Only .html files are accepted",
+    "mustBeHtml": "File must be text/html",
+    "fileEmpty": "File is empty",
+    "fileTooLarge": "File exceeds {{maxMB}} MB limit"
+  },
+  "about": {
+    "title": "About",
+    "version": "Version {{version}}",
+    "openSource": "Open source",
+    "license": "MIT License",
+    "viewOnGitHub": "View on GitHub",
+    "copyright": "© 2026 Antônio Miranda"
+  },
+  "language": {
+    "label": "Language",
+    "auto": "Auto (system)",
+    "changed": "Language changed"
+  },
+  "validation": {
+    "pathRequired": "Path is required",
+    "pathMustStartWithSlash": "Path must start with /",
+    "pathTraversal": "Path traversal not allowed",
+    "doubleSlashes": "Double slashes not allowed",
+    "pathNoSpaces": "Path cannot contain spaces",
+    "pathInvalidChars": "Only letters, numbers, hyphens and underscores allowed",
+    "pathMaxSegments": "Max 5 path segments",
+    "pathReserved": "Path cannot start with \"api\" (reserved)",
+    "apiUrlRequired": "API URL is required",
+    "apiUrlInvalid": "Must be a valid URL",
+    "apiKeyRequired": "API key is required"
+  }
+}

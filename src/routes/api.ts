@@ -13,6 +13,14 @@ export const api_router = new Hono();
 api_router.use("/pages/*", block_writes_in_demo);
 api_router.use("/pages/*", require_api_key);
 
+// GET /api/config — server configuration (auth required)
+api_router.get("/config", require_api_key, (c) => {
+  return c.json({
+    max_file_size_mb: config.max_html_bytes / 1024 / 1024,
+    base_url: config.public_base_url,
+  });
+});
+
 // GET /api/pages — list all published pages (auth required)
 api_router.get("/pages", require_api_key, async (c) => {
   const pages = await storage.list();
