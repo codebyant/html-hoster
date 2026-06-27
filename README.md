@@ -174,7 +174,7 @@ curl -N -H "Authorization: Bearer $API_KEY" \
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/S3ggQm?referralCode=EeixAa&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
-One-click deploy with the button above, or connect the GitHub repo manually. The repo includes `railway.toml` and `nixpacks.toml`. Set the required variables in the dashboard:
+One-click deploy with the button above, or connect the GitHub repo manually. Set the service **Root Directory** to `apps/api` (it holds `railway.toml` and `nixpacks.toml`). Set the required variables in the dashboard:
 
 ```
 API_KEY=...
@@ -224,7 +224,7 @@ Contributions are welcome. The project is intentionally small — keep that in m
 
 ```bash
 git clone https://github.com/codebyant/html-hoster
-cd html-hoster
+cd html-hoster/apps/api
 bun install
 cp .env.example .env
 bun run dev
@@ -233,34 +233,36 @@ bun run dev
 ### Project structure
 
 ```
-src/
-  index.ts          # app entry point, route mounting
-  config.ts         # env vars, typed config object
-  middleware/
-    auth.ts         # API key check (Bearer or raw token)
-    demo.ts         # blocks writes in demo mode
-  routes/
-    api.ts          # REST API routes
-    docs.ts         # OpenAPI spec + Swagger UI
-    mcp_route.ts    # MCP server over SSE (mcp-remote)
-    serve.ts        # landing page + public HTML serving
-  storage/
-    types.ts        # StorageDriver interface
-    local.ts        # filesystem implementation
-    s3.ts           # S3-compatible implementation
-    demo.ts         # no-op implementation for demo mode
-    index.ts        # factory (create_storage)
-  utils/
-    path.ts         # path validation (normalize_path, PathError)
-public/
-  index.html        # landing page
-  assets/           # static assets (logo, etc.)
-  i18n/             # translation files (pt.json, en.json, ...)
+apps/api/             # the hosting API (this README)
+  src/
+    index.ts          # app entry point, route mounting
+    config.ts         # env vars, typed config object
+    middleware/
+      auth.ts         # API key check (Bearer or raw token)
+      demo.ts         # blocks writes in demo mode
+    routes/
+      api.ts          # REST API routes
+      docs.ts         # OpenAPI spec + Swagger UI
+      mcp_route.ts    # MCP server over SSE (mcp-remote)
+      serve.ts        # landing page + public HTML serving
+    storage/
+      types.ts        # StorageDriver interface
+      local.ts        # filesystem implementation
+      s3.ts           # S3-compatible implementation
+      demo.ts         # no-op implementation for demo mode
+      index.ts        # factory (create_storage)
+    utils/
+      path.ts         # path validation (normalize_path, PathError)
+  public/
+    index.html        # landing page
+    assets/           # static assets (logo, etc.)
+    i18n/             # translation files (pt.json, en.json, ...)
+apps/companion/       # desktop companion app (Tauri)
 ```
 
 ### Adding a translation
 
-1. Copy `public/i18n/en.json` → `public/i18n/{lang}.json`
+1. Copy `apps/api/public/i18n/en.json` → `apps/api/public/i18n/{lang}.json`
 2. Translate all values (keep keys and `_meta.lang` / `_meta.flag` correct)
 3. Set `_meta.contributor` to your GitHub username
 4. Open a PR — the language switcher picks it up automatically
